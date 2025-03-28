@@ -1,5 +1,6 @@
 import g4f  # Import GPT4Free API
 from flask import Flask, request, jsonify
+import time
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -10,19 +11,21 @@ def home():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_input = request.json.get("message")  # Get user input from request
-    if not user_input:
-        return jsonify({"error": "No message provided"}), 400
-
     try:
-        response = g4f.ChatCompletion.create(
-            model="gpt-4",
-            messages=[{"role": "system", "content": "You are a helpful therapist."},
-                      {"role": "user", "content": user_input}]
-        )
-        return jsonify({"response": response})
+        data = request.get_json()
+        print("Received Data:", data)  # Debugging output
+        if not data or "message" not in data:
+            return jsonify({"error": "Invalid request, missing 'message'"}), 400
+
+        user_input = data["message"]
+        response = {"response": f"Echo: {user_input}"}  # Temporary response
+
+        return jsonify({"response": response_message})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=10000)
